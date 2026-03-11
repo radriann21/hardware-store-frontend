@@ -1,7 +1,15 @@
 import { Box, Flex, Heading, Text } from "@chakra-ui/react";
 import { LoginForm } from "./components/LoginForm";
+import { useAuthStore } from "@/shared/stores/AuthStore";
+import { Navigate } from "react-router";
 
 export const Auth = () => {
+  const { isAuthenticated } = useAuthStore();
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
   return (
     <Flex
       minH="100vh"
