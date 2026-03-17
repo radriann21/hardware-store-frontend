@@ -5,4 +5,7 @@ export const queryKeys = {
   categories: {
     list: "categories",
   },
+  providers: {
+    list: "providers",
+  },
 } as const;

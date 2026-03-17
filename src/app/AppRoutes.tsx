@@ -6,6 +6,7 @@ import { ProtectedRoute } from "@/shared/components/guards/ProtectedRoute";
 
 // Lazy load components
 const Categories = lazy(() => import("@/features/categories/Categories"));
+const Providers = lazy(() => import("@/features/suppliers/Providers"));
 
 export const AppRoutes = () => {
   return (
@@ -16,6 +17,7 @@ export const AppRoutes = () => {
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<div>Dashboard</div>} />
             <Route path="/categorias" element={<Categories />} />
+            <Route path="/proveedores" element={<Providers />} />
           </Route>
         </Route>
       </Routes>

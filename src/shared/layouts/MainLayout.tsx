@@ -10,25 +10,23 @@ import {
   Button,
 } from "@chakra-ui/react";
 import { Outlet, NavLink as RouterNavLink } from "react-router";
-import { 
-  BarChart3, 
-  Package, 
-  Grid3x3, 
-  Zap, 
-  Truck, 
-  TrendingUp, 
+import {
+  BarChart3,
+  Package,
+  Grid3x3,
+  Zap,
+  Truck,
+  TrendingUp,
   Users,
   LogOut,
-  User
+  User,
 } from "lucide-react";
 import { useAuthStore } from "@/shared/stores/AuthStore";
+import { ROUTES } from "@/shared/config/routes";
 
 export const MainLayout = () => {
   return (
-    <Flex
-      minH="100vh"
-      bgColor="mainBg"
-    >
+    <Flex minH="100vh" bgColor="mainBg">
       <Box display={{ base: "none", md: "block" }}>
         <SidebarContent />
       </Box>
@@ -43,8 +41,8 @@ export const MainLayout = () => {
         </Box>
       </Flex>
     </Flex>
-  )
-}
+  );
+};
 
 interface NavItemProps {
   icon: React.ElementType;
@@ -68,9 +66,7 @@ const NavItem = ({ icon, label, isActive }: NavItemProps) => {
       }}
     >
       <HStack gap={3}>
-        <Icon fontSize="xl">
-          {icon && <Box as={icon} />}
-        </Icon>
+        <Icon fontSize="xl">{icon && <Box as={icon} />}</Icon>
         <Text fontSize="sm" fontWeight="medium">
           {label}
         </Text>
@@ -127,13 +123,13 @@ const UserMenu = () => {
 
 const SidebarContent = () => {
   const navItems = [
-    { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
-    { icon: Package, label: "Products", path: "/products" },
-    { icon: Grid3x3, label: "Categories", path: "/categorias" },
-    { icon: Zap, label: "Measures", path: "/measures" },
-    { icon: Truck, label: "Suppliers", path: "/suppliers" },
-    { icon: TrendingUp, label: "Stock Movement", path: "/stock-movement" },
-    { icon: Users, label: "Users", path: "/users" },
+    { icon: BarChart3, label: "Dashboard", path: ROUTES.DASHBOARD },
+    { icon: Package, label: "Products", path: ROUTES.PRODUCTS },
+    { icon: Grid3x3, label: "Categories", path: ROUTES.CATEGORIES },
+    { icon: Zap, label: "Measures", path: ROUTES.MEASURES },
+    { icon: Truck, label: "Suppliers", path: ROUTES.SUPPLIERS },
+    { icon: TrendingUp, label: "Stock Movement", path: ROUTES.STOCK_MOVEMENT },
+    { icon: Users, label: "Users", path: ROUTES.USERS },
   ];
 
   return (
