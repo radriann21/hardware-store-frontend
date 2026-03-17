@@ -8,4 +8,7 @@ export const queryKeys = {
   providers: {
     list: "providers",
   },
+  measures: {
+    list: "measures",
+  },
 } as const;

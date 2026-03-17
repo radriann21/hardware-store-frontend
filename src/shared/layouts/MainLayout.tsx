@@ -124,12 +124,12 @@ const UserMenu = () => {
 const SidebarContent = () => {
   const navItems = [
     { icon: BarChart3, label: "Dashboard", path: ROUTES.DASHBOARD },
-    { icon: Package, label: "Products", path: ROUTES.PRODUCTS },
-    { icon: Grid3x3, label: "Categories", path: ROUTES.CATEGORIES },
-    { icon: Zap, label: "Measures", path: ROUTES.MEASURES },
-    { icon: Truck, label: "Suppliers", path: ROUTES.SUPPLIERS },
-    { icon: TrendingUp, label: "Stock Movement", path: ROUTES.STOCK_MOVEMENT },
-    { icon: Users, label: "Users", path: ROUTES.USERS },
+    { icon: Package, label: "Productos", path: ROUTES.PRODUCTS },
+    { icon: Grid3x3, label: "Categorías", path: ROUTES.CATEGORIES },
+    { icon: Zap, label: "Medidas", path: ROUTES.MEASURES },
+    { icon: Truck, label: "Proveedores", path: ROUTES.SUPPLIERS },
+    { icon: TrendingUp, label: "Movimientos", path: ROUTES.STOCK_MOVEMENT },
+    { icon: Users, label: "Usuarios", path: ROUTES.USERS },
   ];
 
   return (
