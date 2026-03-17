@@ -38,7 +38,7 @@ export const MainLayout = () => {
         ml={{ base: 0, md: 64 }}
         transition="margin-left 0.2s ease"
       >
-        <Box>
+        <Box as="main" p={8}>
           <Outlet />
         </Box>
       </Flex>
@@ -129,7 +129,7 @@ const SidebarContent = () => {
   const navItems = [
     { icon: BarChart3, label: "Dashboard", path: "/dashboard" },
     { icon: Package, label: "Products", path: "/products" },
-    { icon: Grid3x3, label: "Categories", path: "/categories" },
+    { icon: Grid3x3, label: "Categories", path: "/categorias" },
     { icon: Zap, label: "Measures", path: "/measures" },
     { icon: Truck, label: "Suppliers", path: "/suppliers" },
     { icon: TrendingUp, label: "Stock Movement", path: "/stock-movement" },

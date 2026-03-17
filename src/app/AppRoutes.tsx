@@ -1,7 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router";
+import { lazy } from "react";
 import { Auth } from "@/features/auth/Auth";
 import { MainLayout } from "@/shared/layouts/MainLayout";
 import { ProtectedRoute } from "@/shared/components/guards/ProtectedRoute";
+
+// Lazy load components
+const Categories = lazy(() => import("@/features/categories/Categories"));
 
 export const AppRoutes = () => {
   return (
@@ -11,6 +15,7 @@ export const AppRoutes = () => {
         <Route element={<ProtectedRoute />}>
           <Route element={<MainLayout />}>
             <Route path="/dashboard" element={<div>Dashboard</div>} />
+            <Route path="/categorias" element={<Categories />} />
           </Route>
         </Route>
       </Routes>
