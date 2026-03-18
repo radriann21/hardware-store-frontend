@@ -11,4 +11,7 @@ export const queryKeys = {
   measures: {
     list: "measures",
   },
+  users: {
+    list: "users",
+  },
 } as const;

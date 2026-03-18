@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/shared/components/guards/ProtectedRoute";
 const Categories = lazy(() => import("@/features/categories/Categories"));
 const Providers = lazy(() => import("@/features/suppliers/Providers"));
 const Measures = lazy(() => import("@/features/measures/Measures"));
+const Users = lazy(() => import("@/features/users/Users"));
 
 export const AppRoutes = () => {
   return (
@@ -20,6 +21,7 @@ export const AppRoutes = () => {
             <Route path="/categorias" element={<Categories />} />
             <Route path="/proveedores" element={<Providers />} />
             <Route path="/medidas" element={<Measures />} />
+            <Route path="/usuarios" element={<Users />} />
           </Route>
         </Route>
       </Routes>
