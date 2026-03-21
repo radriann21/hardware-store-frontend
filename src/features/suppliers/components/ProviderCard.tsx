@@ -6,15 +6,19 @@ import {
   Text,
   HStack,
   Icon,
+  IconButton,
 } from "@chakra-ui/react";
-import { Pencil, Mail, Phone, MapPin, Copy } from "lucide-react";
-import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
-import { EditProviderDialog } from "./EditProviderDialog";
+import { Pencil, Mail, Phone, MapPin, Copy, Trash2 } from "lucide-react";
+import { Tooltip } from "@/shared/components/ui/tooltip";
 import type { Provider } from "@/features/suppliers/interfaces/interfaces";
-import { useState } from "react";
 
-export const ProviderCard = (provider: Provider) => {
-  const [isEditOpen, setIsEditOpen] = useState(false);
+interface ProviderCardProps {
+  provider: Provider;
+  onEdit?: (provider: Provider) => void;
+  onDelete?: (provider: Provider) => void;
+}
+
+export const ProviderCard = ({ provider, onEdit, onDelete }: ProviderCardProps) => {
 
   return (
     <>
@@ -75,25 +79,34 @@ export const ProviderCard = (provider: Provider) => {
         </Flex>
 
         <Flex w="full" gap={2} borderTop="1px solid" borderColor="gray.200" pt={4}>
-          <Button
-            flex={1}
-            size="sm"
-            fontWeight="normal"
-            colorPalette="green"
-            variant="outline"
-            onClick={() => setIsEditOpen(true)}
-          >
-            <Pencil size={14} />
-            Edit
-          </Button>
-          <ConfirmDeleteDialog id={provider.id} />
+          {onEdit && (
+            <Button
+              flex={1}
+              size="sm"
+              fontWeight="normal"
+              colorPalette="green"
+              variant="outline"
+              onClick={() => onEdit(provider)}
+            >
+              <Pencil size={14} />
+              Editar
+            </Button>
+          )}
+          {onDelete && (
+            <Tooltip content="Eliminar">
+              <IconButton
+                size="sm"
+                variant="ghost"
+                colorPalette="red"
+                aria-label="Eliminar proveedor"
+                onClick={() => onDelete(provider)}
+              >
+                <Trash2 size={14} />
+              </IconButton>
+            </Tooltip>
+          )}
         </Flex>
       </Box>
-      <EditProviderDialog 
-        provider={provider} 
-        isOpen={isEditOpen} 
-        onClose={() => setIsEditOpen(false)} 
-      />
     </>
   );
 };

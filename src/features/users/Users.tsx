@@ -7,24 +7,31 @@ import {
   Input,
   InputGroup,
 } from "@chakra-ui/react";
-import { Eye, Search } from "lucide-react";
+import { Eye, Search, Trash2 } from "lucide-react";
 import {
   CustomTable,
   type ColumnDef,
 } from "@/shared/components/custom/CustomTable";
 import { CreateUserDialog } from "./components/CreateUserDialog";
-import { useGetUsers } from "./hooks/useUsers";
+import { useGetUsers, useDeleteUser } from "./hooks/useUsers";
 import type { User } from "./interfaces/interfaces";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { EditUserDialog } from "./components/EditUserDialog";
-import { ConfirmDeleteDialog } from "./components/ConfirmDeleteDialog";
+import { ConfirmDeleteDialog } from "@/shared/components/custom/ConfirmDeleteDialog";
 import { useDebounceValue } from "@/shared/hooks/useDebounceValue";
+import { Tooltip } from "@/shared/components/ui/tooltip";
+import type { ModalState } from "@/shared/interfaces/interfaces";
 
 export default function Users() {
+  const [modalState, setModalState] = useState<ModalState<User>>({ type: 'closed' });
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearchTerm = useDebounceValue(searchTerm, 500);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  const { mutate: deleteUser } = useDeleteUser();
+
+  const handleDelete = (id: string) => {
+    deleteUser(id);
+    setModalState({ type: 'closed' });
+  };
 
   const { data: users, isLoading } = useGetUsers({
     page: 1,
@@ -32,7 +39,7 @@ export default function Users() {
     search: debouncedSearchTerm || undefined,
   });
 
-  const columns: ColumnDef<User>[] = [
+  const columns = useMemo<ColumnDef<User>[]>(() => [
     {
       id: "name",
       header: "Nombre",
@@ -60,22 +67,31 @@ export default function Users() {
       accessor: "id",
       render: (user) => (
         <Flex gap={2}>
-          <IconButton
-            size="xs"
-            variant="ghost"
-            aria-label="Ver usuario"
-            onClick={() => {
-              setSelectedUser(user);
-              setIsEditOpen(true);
-            }}
-          >
-            <Eye size={16} />
-          </IconButton>
-          <ConfirmDeleteDialog id={user.id} />
+          <Tooltip content="Ver/Editar">
+            <IconButton
+              size="xs"
+              variant="ghost"
+              aria-label="Ver usuario"
+              onClick={() => setModalState({ type: 'edit', el: user })}
+            >
+              <Eye size={16} />
+            </IconButton>
+          </Tooltip>
+          <Tooltip content="Eliminar">
+            <IconButton
+              size="xs"
+              variant="ghost"
+              colorPalette="red"
+              aria-label="Eliminar usuario"
+              onClick={() => setModalState({ type: 'delete', el: user })}
+            >
+              <Trash2 size={16} />
+            </IconButton>
+          </Tooltip>
         </Flex>
       ),
     },
-  ];
+  ], []);
 
   return (
     <>
@@ -120,16 +136,24 @@ export default function Users() {
         />
       </Box>
 
-      {selectedUser && (
+      {modalState.type === 'edit' && (
         <EditUserDialog
-          user={selectedUser}
-          isOpen={isEditOpen}
-          onClose={() => {
-            setIsEditOpen(false);
-            setSelectedUser(null);
-          }}
+          user={modalState.el}
+          isOpen={true}
+          onClose={() => setModalState({ type: 'closed' })}
         />
       )}
+      <ConfirmDeleteDialog
+        title="¿Estás seguro de eliminar este usuario?"
+        descripcion="Esta acción no se puede deshacer."
+        isOpen={modalState.type === 'delete'}
+        onOpenChange={() => setModalState({ type: 'closed' })}
+        handleDelete={() => {
+          if (modalState.type === 'delete') {
+            handleDelete(modalState.el.id);
+          }
+        }}
+      />
     </>
   );
 }
