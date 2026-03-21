@@ -14,4 +14,7 @@ export const queryKeys = {
   users: {
     list: "users",
   },
+  products: {
+    list: "products",
+  },
 } as const;
