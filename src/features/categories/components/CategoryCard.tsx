@@ -3,15 +3,21 @@ import {
   Button,
   Flex,
   Heading,
-  Text,
+  IconButton,
+  Text
 } from "@chakra-ui/react";
-import { Pencil } from "lucide-react";
-import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
+import { Pencil, Trash2 } from "lucide-react";
 import { EditCategoryDialog } from "./EditCategoryDialog";
-import type { Category } from "@/features/categories/interfaces/interfaces";
 import { useState } from "react";
+import { Tooltip } from "@/shared/components/ui/tooltip";
+import type { Category } from "@/features/categories/interfaces/interfaces";
 
-export const CategoryCard = (category: Category) => {
+interface CategoryCardProps {
+  category: Category;
+  onDelete?: (category: Category) => void;
+}
+
+export const CategoryCard = ({ category, onDelete }: CategoryCardProps) => {
   const [isEditOpen, setIsEditOpen] = useState(false);
 
   return (
@@ -45,7 +51,21 @@ export const CategoryCard = (category: Category) => {
             <Pencil size={14} />
             Edit
           </Button>
-          <ConfirmDeleteDialog id={category.id} />
+          {
+            onDelete && (
+              <Tooltip content="Eliminar">
+                <IconButton
+                  size="xs"
+                  variant="ghost"
+                  colorPalette="red"
+                  aria-label="Eliminar categoría"
+                  onClick={() => onDelete(category)}
+                >
+                  <Trash2 size={14} />
+                </IconButton>
+              </Tooltip>
+            )
+          }
         </Flex>
       </Box>
       <EditCategoryDialog 

@@ -1,46 +1,32 @@
-import {
-  Button,
-  CloseButton,
-  Dialog,
-  IconButton,
-  Portal,
-} from "@chakra-ui/react";
-import { Trash2 } from "lucide-react";
-import { useState } from "react";
-import { useDeleteCategory } from "@/features/categories/hooks/useCategories";
+import { Dialog, Button, CloseButton, Portal } from "@chakra-ui/react";
 
-export const ConfirmDeleteDialog = ({ id }: { id: number }) => {
-  const [open, setOpen] = useState<boolean>(false);
+interface ConfirmDeleteDialogProps {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  descripcion: string;
+  handleDelete: () => void;
+}
 
-  const { mutate: deleteCategory } = useDeleteCategory();
-
-  const handleDelete = () => {
-    deleteCategory(id);
-    setOpen(!open);
-  };
-
+export const ConfirmDeleteDialog = ({
+  isOpen,
+  onOpenChange,
+  title,
+  descripcion,
+  handleDelete,
+}: ConfirmDeleteDialogProps) => {
   return (
-    <Dialog.Root lazyMount open={open} onOpenChange={(e) => setOpen(e.open)}>
-      <Dialog.Trigger asChild>
-        <IconButton
-          variant="outline"
-          size="xs"
-          colorPalette="red"
-          aria-label="Eliminar"
-        >
-          <Trash2 size={14} />
-        </IconButton>
-      </Dialog.Trigger>
+    <Dialog.Root lazyMount open={isOpen} onOpenChange={(e) => onOpenChange(e.open)}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header display="flex" flexDirection="column" gap={2}>
               <Dialog.Title>
-                ¿Estás seguro de eliminar esta categoría?
+                {title}
               </Dialog.Title>
               <Dialog.Description>
-                Esta acción no se puede deshacer.
+                {descripcion}
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Footer>
@@ -60,7 +46,7 @@ export const ConfirmDeleteDialog = ({ id }: { id: number }) => {
               </Button>
             </Dialog.Footer>
             <Dialog.CloseTrigger asChild>
-              <CloseButton size="sm" />
+              <CloseButton size="xs" />
             </Dialog.CloseTrigger>
           </Dialog.Content>
         </Dialog.Positioner>

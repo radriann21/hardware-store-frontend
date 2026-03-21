@@ -5,15 +5,19 @@ import {
   Heading,
   Text,
   Badge,
+  IconButton,
 } from "@chakra-ui/react";
-import { Pencil } from "lucide-react";
-import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
-import { EditMeasureDialog } from "./EditMeasureDialog";
+import { Pencil, Trash2 } from "lucide-react";
+import { Tooltip } from "@/shared/components/ui/tooltip";
 import type { Measure } from "@/features/measures/interfaces/interfaces";
-import { useState } from "react";
 
-export const MeasureCard = (measure: Measure) => {
-  const [isEditOpen, setIsEditOpen] = useState(false);
+interface MeasureCardProps {
+  measure: Measure;
+  onEdit?: (measure: Measure) => void;
+  onDelete?: (measure: Measure) => void;
+}
+
+export const MeasureCard = ({ measure, onEdit, onDelete }: MeasureCardProps) => {
 
   return (
     <>
@@ -55,25 +59,34 @@ export const MeasureCard = (measure: Measure) => {
         </Text>
 
         <Flex w="full" gap={2} borderTop="1px solid" borderColor="gray.200" pt={4}>
-          <Button
-            flex={1}
-            size="sm"
-            fontWeight="normal"
-            colorPalette="green"
-            variant="outline"
-            onClick={() => setIsEditOpen(true)}
-          >
-            <Pencil size={14} />
-            Editar
-          </Button>
-          <ConfirmDeleteDialog id={String(measure.id)} />
+          {onEdit && (
+            <Button
+              flex={1}
+              size="sm"
+              fontWeight="normal"
+              colorPalette="green"
+              variant="outline"
+              onClick={() => onEdit(measure)}
+            >
+              <Pencil size={14} />
+              Editar
+            </Button>
+          )}
+          {onDelete && (
+            <Tooltip content="Eliminar">
+              <IconButton
+                size="sm"
+                variant="ghost"
+                colorPalette="red"
+                aria-label="Eliminar medida"
+                onClick={() => onDelete(measure)}
+              >
+                <Trash2 size={14} />
+              </IconButton>
+            </Tooltip>
+          )}
         </Flex>
       </Box>
-      <EditMeasureDialog 
-        measure={measure} 
-        isOpen={isEditOpen} 
-        onClose={() => setIsEditOpen(false)} 
-      />
     </>
   );
 };
