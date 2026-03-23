@@ -7,59 +7,87 @@ import {
   Input,
   Portal,
 } from "@chakra-ui/react";
-import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   userSchema,
+  editUserSchema,
   type UserForm,
+  type EditUserForm,
 } from "@/features/users/validations/user.validation";
-import { useCreateUser } from "@/features/users/hooks/useUsers";
-import { useState } from "react";
+import { useCreateUser, useEditUser } from "@/features/users/hooks/useUsers";
+import type { User } from "../interfaces/interfaces";
 
-export const CreateUserDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface CreateUserDialogProps {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  userToEdit?: User | null;
+}
 
+export const CreateUserDialog = ({
+  isOpen,
+  onOpenChange,
+  userToEdit,
+}: CreateUserDialogProps) => {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<UserForm>({
-    resolver: zodResolver(userSchema),
+  } = useForm<UserForm | EditUserForm>({
+    resolver: zodResolver(userToEdit ? editUserSchema : userSchema),
+    defaultValues: userToEdit
+      ? {
+          name: userToEdit.name,
+          lastname: userToEdit.lastname,
+          username: userToEdit.username,
+        }
+      : {
+          name: "",
+          lastname: "",
+          username: "",
+          password: "",
+        },
   });
 
   const { mutate: createUser } = useCreateUser({ reset });
+  const { mutate: editUser } = useEditUser();
 
-  const onSubmit = (data: UserForm) => {
-    createUser(data);
-    setIsOpen(false);
+  const onSubmit = (data: UserForm | EditUserForm) => {
+    if (userToEdit) {
+      editUser(
+        { id: userToEdit.id, data },
+        {
+          onSuccess: () => {
+            onOpenChange();
+            reset();
+          },
+        },
+      );
+    } else {
+      createUser(data, {
+        onSuccess: () => {
+          onOpenChange();
+          reset();
+        },
+      });
+    }
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
-      <Dialog.Trigger asChild>
-        <Button
-          bgColor="#6B60CE"
-          color="white"
-          size="sm"
-          fontWeight="semibold"
-          _hover={{
-            bgColor: "#5a4fb8",
-          }}
-        >
-          Agregar Usuario
-          <Plus />
-        </Button>
-      </Dialog.Trigger>
+    <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header display="flex" flexDirection="column" gap={2}>
-              <Dialog.Title>Crear Usuario</Dialog.Title>
+              <Dialog.Title>
+                {userToEdit ? "Editar Usuario" : "Crear Usuario"}
+              </Dialog.Title>
               <Dialog.Description>
-                Complete los campos para crear un nuevo usuario
+                {userToEdit
+                  ? "Complete los campos para editar un usuario"
+                  : "Complete los campos para crear un nuevo usuario"}
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Body>
@@ -90,7 +118,9 @@ export const CreateUserDialog = () => {
                       size="sm"
                     />
                     {errors.lastname && (
-                      <Field.ErrorText>{errors.lastname.message}</Field.ErrorText>
+                      <Field.ErrorText>
+                        {errors.lastname.message}
+                      </Field.ErrorText>
                     )}
                   </Field.Root>
                   <Field.Root invalid={!!errors.username}>
@@ -104,10 +134,14 @@ export const CreateUserDialog = () => {
                       size="sm"
                     />
                     {errors.username && (
-                      <Field.ErrorText>{errors.username.message}</Field.ErrorText>
+                      <Field.ErrorText>
+                        {errors.username.message}
+                      </Field.ErrorText>
                     )}
                   </Field.Root>
-                  <Field.Root invalid={!!errors.password}>
+                  <Field.Root
+                    invalid={!!("password" in errors && errors.password)}
+                  >
                     <Field.Label>
                       Contraseña
                       <span style={{ color: "red" }}>*</span>
@@ -118,11 +152,15 @@ export const CreateUserDialog = () => {
                       placeholder="Contraseña"
                       size="sm"
                     />
-                    {errors.password && (
-                      <Field.ErrorText>{errors.password.message}</Field.ErrorText>
+                    {"password" in errors && errors.password && (
+                      <Field.ErrorText>
+                        {errors.password.message}
+                      </Field.ErrorText>
                     )}
                   </Field.Root>
-                  <Button type="submit" colorPalette="green">Guardar</Button>
+                  <Button type="submit" colorPalette="green">
+                    Guardar
+                  </Button>
                 </Fieldset.Root>
               </form>
             </Dialog.Body>

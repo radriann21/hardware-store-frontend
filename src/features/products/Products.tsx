@@ -27,13 +27,14 @@ import type { ModalState } from "@/shared/interfaces/interfaces";
 import type { Product } from "./interfaces/interfaces";
 
 export default function Products() {
+  const [page, setPage] = useState(1);
   const [modalState, setModalState] = useState<ModalState<Product>>({ type: "closed" });
   const [viewMode, setViewMode] = useState<"cards" | "table">("table");
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounceValue(searchTerm, 500);
 
   const { data: products, isLoading } = useGetAllProducts({
-    page: 1,
+    page,
     limit: 10,
     search: debouncedSearch,
   });
@@ -119,19 +120,19 @@ export default function Products() {
           <Heading size="2xl">Productos</Heading>
           <Text fontSize="lg">Controla los productos de tu negocio.</Text>
         </Box>
-        <ProductsOptions onAddProduct={() => setModalState({ type: "create" })} />
+        <ProductsOptions 
+          onAddProduct={() => setModalState({ type: "create" })} 
+        />
       </Flex>
       <Flex my="20px" gapX="20px" alignItems="center" w="100%">
         <InputGroup
           flex="1"
           startElement={<Search size={16} />}
-          bgColor="#F8EFF1"
-          shadow="md"
-          border="1px solid"
-          borderColor="#E2E8F0"
-          rounded="md"
         >
           <Input
+            bgColor="white"
+            shadow="sm"
+            rounded="md"
             placeholder="Buscar..."
             fontSize="sm"
             value={searchTerm}
@@ -190,6 +191,7 @@ export default function Products() {
               limit={products?.meta.limit || 10}
               page={products?.meta.page || 1}
               count={products?.meta.total || 0}
+              onPageChange={(newPage) => setPage(newPage)}
             />
           )}
         </>
