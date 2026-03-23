@@ -1,9 +1,9 @@
-import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Heading, Text, Button } from "@chakra-ui/react";
+import { Plus } from "lucide-react";
 import { CreateProviderDialog } from "./components/CreateProviderDialog";
 import { ProviderCard } from "./components/ProviderCard";
 import { useGetProviders, useDeleteProvider } from "./hooks/useProviders";
 import { ConfirmDeleteDialog } from "@/shared/components/custom/ConfirmDeleteDialog";
-import { EditProviderDialog } from "./components/EditProviderDialog";
 import { useState } from "react";
 import type { Provider } from "./interfaces/interfaces";
 import type { ModalState } from "@/shared/interfaces/interfaces";
@@ -25,7 +25,19 @@ export default function Providers() {
           <Heading size="2xl">Proveedores</Heading>
           <Text fontSize="lg">Gestiona tus proveedores de productos</Text>
         </Box>
-        <CreateProviderDialog />
+        <Button
+          bgColor="#6B60CE"
+          color="white"
+          size="sm"
+          fontWeight="semibold"
+          onClick={() => setModalState({ type: "create" })}
+          _hover={{
+            bgColor: "#5a4fb8",
+          }}
+        >
+          Agregar Proveedor
+          <Plus size={16} />
+        </Button>
       </Flex>
       {
         isLoading ? (
@@ -47,13 +59,12 @@ export default function Providers() {
           </Flex>
         )
       }
-      {modalState.type === 'edit' && (
-        <EditProviderDialog
-          provider={modalState.el}
-          isOpen={true}
-          onClose={() => setModalState({ type: 'closed' })}
-        />
-      )}
+      <CreateProviderDialog
+        key={modalState.type === "edit" ? modalState.el.id : "new"}
+        isOpen={modalState.type === "create" || modalState.type === "edit"}
+        providerToEdit={modalState.type === "edit" ? modalState.el : null}
+        onOpenChange={() => setModalState({ type: "closed" })}
+      />
       <ConfirmDeleteDialog
         title="¿Estás seguro de eliminar este proveedor?"
         descripcion="Esta acción no se puede deshacer."

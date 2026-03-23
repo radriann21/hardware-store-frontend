@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { UsersApi } from "@/features/users/api/UsersApi";
 import { queryKeys } from "@/shared/query/queryKeys";
 import { toaster } from "@/shared/components/ui/toaster";
@@ -32,6 +32,7 @@ export const useGetUsers = (params: Pagination = { page: 1, limit: 10 }) => {
   return useQuery({
     queryKey: [queryKeys.users.list, params],
     queryFn: () => UsersApi.getAllUsers(params),
+    placeholderData: keepPreviousData
   });
 };
 

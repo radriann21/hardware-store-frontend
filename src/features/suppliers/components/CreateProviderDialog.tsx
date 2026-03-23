@@ -8,19 +8,26 @@ import {
   Portal,
   Textarea,
 } from "@chakra-ui/react";
-import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   providerSchema,
   type ProviderForm,
 } from "@/features/suppliers/validations/providers.validation";
-import { useCreateProvider } from "@/features/suppliers/hooks/useProviders";
-import { useState } from "react";
+import { useCreateProvider, useEditProvider } from "@/features/suppliers/hooks/useProviders";
+import type { Provider } from "../interfaces/interfaces";
 
-export const CreateProviderDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface CreateProviderDialogProps {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  providerToEdit?: Provider | null;
+}
 
+export const CreateProviderDialog = ({
+  isOpen,
+  onOpenChange,
+  providerToEdit,
+}: CreateProviderDialogProps) => {
   const {
     register,
     handleSubmit,
@@ -28,39 +35,59 @@ export const CreateProviderDialog = () => {
     formState: { errors },
   } = useForm<ProviderForm>({
     resolver: zodResolver(providerSchema),
+    defaultValues: providerToEdit
+      ? {
+          name: providerToEdit.name,
+          contact_name: providerToEdit.contact_name,
+          phone_number: providerToEdit.phone_number,
+          address: providerToEdit.address,
+        }
+      : {
+          name: "",
+          contact_name: "",
+          phone_number: "",
+          address: "",
+        },
   });
 
   const { mutate: createProvider } = useCreateProvider({ reset });
+  const { mutate: editProvider } = useEditProvider();
 
   const onSubmit = (data: ProviderForm) => {
-    createProvider(data);
-    setIsOpen(false);
+    if (providerToEdit) {
+      editProvider(
+        { id: providerToEdit.id, data },
+        {
+          onSuccess: () => {
+            onOpenChange();
+            reset();
+          },
+        },
+      );
+    } else {
+      createProvider(data, {
+        onSuccess: () => {
+          onOpenChange();
+          reset();
+        },
+      });
+    }
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
-      <Dialog.Trigger asChild>
-        <Button
-          bgColor="#6B60CE"
-          color="white"
-          size="sm"
-          fontWeight="semibold"
-          _hover={{
-            bgColor: "#5a4fb8",
-          }}
-        >
-          Add Supplier
-          <Plus />
-        </Button>
-      </Dialog.Trigger>
+    <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header display="flex" flexDirection="column" gap={2}>
-              <Dialog.Title>Crear Proveedor</Dialog.Title>
+              <Dialog.Title>
+                {providerToEdit ? "Editar Proveedor" : "Crear Proveedor"}
+              </Dialog.Title>
               <Dialog.Description>
-                Complete los campos para crear un nuevo proveedor
+                {providerToEdit
+                  ? "Modifique los campos para actualizar el proveedor"
+                  : "Complete los campos para crear un nuevo proveedor"}
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Body>

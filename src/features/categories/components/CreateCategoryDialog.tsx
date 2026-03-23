@@ -7,19 +7,26 @@ import {
   Input,
   Portal,
 } from "@chakra-ui/react";
-import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   categorySchema,
   type CategoryForm,
 } from "@/features/categories/validations/category.validation";
-import { useCreateCategory } from "@/features/categories/hooks/useCategories";
-import { useState } from "react";
+import { useCreateCategory, useEditCategory } from "@/features/categories/hooks/useCategories";
+import type { Category } from "../interfaces/interfaces";
 
-export const CreateCategoryDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface CreateCategoryDialogProps {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  categoryToEdit?: Category | null;
+}
 
+export const CreateCategoryDialog = ({
+  isOpen,
+  onOpenChange,
+  categoryToEdit,
+}: CreateCategoryDialogProps) => {
   const {
     register,
     handleSubmit,
@@ -27,39 +34,55 @@ export const CreateCategoryDialog = () => {
     formState: { errors },
   } = useForm<CategoryForm>({
     resolver: zodResolver(categorySchema),
+    defaultValues: categoryToEdit
+      ? {
+          name: categoryToEdit.name,
+          description: categoryToEdit.description,
+        }
+      : {
+          name: "",
+          description: "",
+        },
   });
 
   const { mutate: createCategory } = useCreateCategory({ reset });
+  const { mutate: editCategory } = useEditCategory();
 
   const onSubmit = (data: CategoryForm) => {
-    createCategory(data);
-    setIsOpen(false);
+    if (categoryToEdit) {
+      editCategory(
+        { id: categoryToEdit.id, data },
+        {
+          onSuccess: () => {
+            onOpenChange();
+            reset();
+          },
+        },
+      );
+    } else {
+      createCategory(data, {
+        onSuccess: () => {
+          onOpenChange();
+          reset();
+        },
+      });
+    }
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
-      <Dialog.Trigger asChild>
-        <Button
-          bgColor="#6B60CE"
-          color="white"
-          size="sm"
-          fontWeight="semibold"
-          _hover={{
-            bgColor: "#5a4fb8",
-          }}
-        >
-          Agregar Categoria
-          <Plus />
-        </Button>
-      </Dialog.Trigger>
+    <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header display="flex" flexDirection="column" gap={2}>
-              <Dialog.Title>Crear Categoria</Dialog.Title>
+              <Dialog.Title>
+                {categoryToEdit ? "Editar Categoria" : "Crear Categoria"}
+              </Dialog.Title>
               <Dialog.Description>
-                Complete los campos para crear una nueva categoria
+                {categoryToEdit
+                  ? "Modifique los campos para actualizar la categoria"
+                  : "Complete los campos para crear una nueva categoria"}
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Body>

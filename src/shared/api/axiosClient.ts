@@ -15,7 +15,7 @@ axiosClient.interceptors.response.use(
   (error) => {
     console.error("API Error:", error);
 
-    if (!error.response) {
+    if (error.message === "Network Error") {
       toaster.create({
         title: "Error de conexión",
         description: "No se pudo conectar con el servidor",
@@ -43,9 +43,6 @@ axiosClient.interceptors.response.use(
         break;
       case 403:
         toaster.create({ title: "Acceso denegado", type: "error" });
-        break;
-      case 404:
-        toaster.create({ title: "Recurso no encontrado", type: "error" });
         break;
 
       case 500:

@@ -1,4 +1,5 @@
-import { Box, Flex, Grid, Heading, Text } from "@chakra-ui/react";
+import { Box, Flex, Grid, Heading, Text, Button } from "@chakra-ui/react";
+import { Plus } from "lucide-react";
 import { CreateCategoryDialog } from "./components/CreateCategoryDialog";
 import { CategoryCard } from "./components/CategoryCard";
 import { useGetCategories } from "./hooks/useCategories";
@@ -15,6 +16,7 @@ export default function Categories() {
 
   const handleDelete = (id: number) => {
     deleteCategory(id);
+    setModalState({ type: 'closed' });
   };
 
   return (
@@ -24,7 +26,19 @@ export default function Categories() {
           <Heading size="2xl">Categorias</Heading>
           <Text fontSize="lg">Listado y control de categorias</Text>
         </Box>
-        <CreateCategoryDialog />
+        <Button
+          bgColor="#6B60CE"
+          color="white"
+          size="sm"
+          fontWeight="semibold"
+          onClick={() => setModalState({ type: "create" })}
+          _hover={{
+            bgColor: "#5a4fb8",
+          }}
+        >
+          Agregar Categoria
+          <Plus size={16} />
+        </Button>
       </Flex>
       {
         isLoading ? (
@@ -34,7 +48,8 @@ export default function Categories() {
             {categories.map((category) => (
               <CategoryCard 
                 key={category.id} 
-                category={category} 
+                category={category}
+                onEdit={(category) => setModalState({ type: 'edit', el: category })}
                 onDelete={(category) => {
                   setModalState({ type: 'delete', el: category });
                 }}
@@ -47,6 +62,12 @@ export default function Categories() {
           </Flex>
         )
       }
+      <CreateCategoryDialog
+        key={modalState.type === "edit" ? modalState.el.id : "new"}
+        isOpen={modalState.type === "create" || modalState.type === "edit"}
+        categoryToEdit={modalState.type === "edit" ? modalState.el : null}
+        onOpenChange={() => setModalState({ type: "closed" })}
+      />
       <ConfirmDeleteDialog 
         title="¿Estas seguro de desactivar la categoría?"
         descripcion="La categoría pasará a estar inactiva."
@@ -55,7 +76,6 @@ export default function Categories() {
         handleDelete={() => {
           if (modalState.type === 'delete') {
             handleDelete(modalState.el.id);
-            setModalState({ type: 'closed' });
           }
         }}
       />
