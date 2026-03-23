@@ -24,6 +24,7 @@ interface CustomTableProps<T> {
   limit: number;
   page: number;
   count: number;
+  onPageChange?: (page: number) => void;
 }
 
 export const CustomTable = <T,>({
@@ -35,6 +36,7 @@ export const CustomTable = <T,>({
   limit,
   page,
   count,
+  onPageChange,
 }: CustomTableProps<T>) => {
   const renderCellContent = (item: T, column: ColumnDef<T>): ReactNode => {
     if (column.render) {
@@ -101,6 +103,7 @@ export const CustomTable = <T,>({
         pageSize={limit}
         page={page}
         count={count}
+        onPageChange={(e) => onPageChange?.(e.page)}
       >
         <ButtonGroup>
           <Pagination.PrevTrigger asChild>

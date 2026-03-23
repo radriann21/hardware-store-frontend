@@ -5,7 +5,7 @@ import { toaster } from "@/shared/components/ui/toaster";
 import type { UserForm } from "@/features/users/validations/user.validation";
 import type { Pagination } from "@/shared/interfaces/interfaces";
 
-export const useCreateUser = ({ reset }: { reset: () => void }) => {
+export const useCreateUser = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -17,7 +17,6 @@ export const useCreateUser = ({ reset }: { reset: () => void }) => {
         description: "El usuario se ha creado correctamente",
         type: "success"
       });
-      reset();
     },
     onError: (error) => {
       toaster.create({
