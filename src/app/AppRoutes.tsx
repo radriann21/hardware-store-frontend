@@ -10,6 +10,7 @@ const Providers = lazy(() => import("@/features/suppliers/Providers"));
 const Measures = lazy(() => import("@/features/measures/Measures"));
 const Users = lazy(() => import("@/features/users/Users"));
 const Products = lazy(() => import("@/features/products/Products"));
+const Movements = lazy(() => import("@/features/movements/Movements"));
 
 export const AppRoutes = () => {
   return (
@@ -24,6 +25,7 @@ export const AppRoutes = () => {
             <Route path="/medidas" element={<Measures />} />
             <Route path="/usuarios" element={<Users />} />
             <Route path="/productos" element={<Products />} />
+            <Route path="/movimientos" element={<Movements />} />
           </Route>
         </Route>
       </Routes>
