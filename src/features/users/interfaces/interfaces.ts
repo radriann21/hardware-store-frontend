@@ -1,3 +1,5 @@
+import type { GenericPaginationResponse } from "@/shared/interfaces/interfaces";
+
 export interface User {
   id: string;
   name: string;
@@ -7,11 +9,4 @@ export interface User {
   created_at: string;
 }
 
-export interface UsersResponse {
-  data: User[];
-  meta: {
-    page: number;
-    limit: number;
-    total: number;
-  };
-}
+export type UsersResponse = GenericPaginationResponse<User>;

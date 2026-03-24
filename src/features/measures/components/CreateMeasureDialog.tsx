@@ -7,19 +7,26 @@ import {
   Input,
   Portal,
 } from "@chakra-ui/react";
-import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   measureSchema,
   type MeasureFormValues,
 } from "@/features/measures/validation/measure.validation";
-import { useCreateMeasure } from "@/features/measures/hooks/useMeasures";
-import { useState } from "react";
+import { useCreateMeasure, useEditMeasure } from "@/features/measures/hooks/useMeasures";
+import type { Measure } from "../interfaces/interfaces";
 
-export const CreateMeasureDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+interface CreateMeasureDialogProps {
+  isOpen: boolean;
+  onOpenChange: () => void;
+  measureToEdit?: Measure | null;
+}
 
+export const CreateMeasureDialog = ({
+  isOpen,
+  onOpenChange,
+  measureToEdit,
+}: CreateMeasureDialogProps) => {
   const {
     register,
     handleSubmit,
@@ -27,39 +34,55 @@ export const CreateMeasureDialog = () => {
     formState: { errors },
   } = useForm<MeasureFormValues>({
     resolver: zodResolver(measureSchema),
+    defaultValues: measureToEdit
+      ? {
+          name: measureToEdit.name,
+          abbreviation: measureToEdit.abbreviation,
+        }
+      : {
+          name: "",
+          abbreviation: "",
+        },
   });
 
   const { mutate: createMeasure } = useCreateMeasure({ reset });
+  const { mutate: editMeasure } = useEditMeasure();
 
   const onSubmit = (data: MeasureFormValues) => {
-    createMeasure(data);
-    setIsOpen(false);
+    if (measureToEdit) {
+      editMeasure(
+        { id: String(measureToEdit.id), data },
+        {
+          onSuccess: () => {
+            onOpenChange();
+            reset();
+          },
+        },
+      );
+    } else {
+      createMeasure(data, {
+        onSuccess: () => {
+          onOpenChange();
+          reset();
+        },
+      });
+    }
   };
 
   return (
-    <Dialog.Root open={isOpen} onOpenChange={() => setIsOpen(!isOpen)}>
-      <Dialog.Trigger asChild>
-        <Button
-          bgColor="#6B60CE"
-          color="white"
-          size="sm"
-          fontWeight="semibold"
-          _hover={{
-            bgColor: "#5a4fb8",
-          }}
-        >
-          Agregar Medida
-          <Plus />
-        </Button>
-      </Dialog.Trigger>
+    <Dialog.Root open={isOpen} onOpenChange={onOpenChange}>
       <Portal>
         <Dialog.Backdrop />
         <Dialog.Positioner>
           <Dialog.Content>
             <Dialog.Header display="flex" flexDirection="column" gap={2}>
-              <Dialog.Title>Crear Medida</Dialog.Title>
+              <Dialog.Title>
+                {measureToEdit ? "Editar Medida" : "Crear Medida"}
+              </Dialog.Title>
               <Dialog.Description>
-                Complete los campos para crear una nueva medida
+                {measureToEdit
+                  ? "Modifique los campos para actualizar la medida"
+                  : "Complete los campos para crear una nueva medida"}
               </Dialog.Description>
             </Dialog.Header>
             <Dialog.Body>

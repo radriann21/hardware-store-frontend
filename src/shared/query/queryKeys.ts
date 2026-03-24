@@ -17,4 +17,7 @@ export const queryKeys = {
   products: {
     list: "products",
   },
+  movements: {
+    list: "movements",
+  },
 } as const;

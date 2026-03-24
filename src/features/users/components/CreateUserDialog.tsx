@@ -50,7 +50,7 @@ export const CreateUserDialog = ({
         },
   });
 
-  const { mutate: createUser } = useCreateUser({ reset });
+  const { mutate: createUser } = useCreateUser();
   const { mutate: editUser } = useEditUser();
 
   const onSubmit = (data: UserForm | EditUserForm) => {
