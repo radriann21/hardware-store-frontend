@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router";
-import { lazy } from "react";
+import { useRoutes } from "react-router";
+import { lazy, Suspense } from "react";
 import { Auth } from "@/features/auth/Auth";
 import { MainLayout } from "@/shared/layouts/MainLayout";
 import { ProtectedRoute } from "@/shared/components/guards/ProtectedRoute";
+import { SuspenseLoading } from "@/shared/components/custom/SuspenseLoading";
 
 // Lazy load components
 const Categories = lazy(() => import("@/features/categories/Categories"));
@@ -13,22 +14,46 @@ const Products = lazy(() => import("@/features/products/Products"));
 const Movements = lazy(() => import("@/features/movements/Movements"));
 
 export const AppRoutes = () => {
+
+  const routes = useRoutes([
+    { path: "/", element: <Auth /> },
+    { element: <ProtectedRoute />, children: [
+      { element: <MainLayout />, children: [
+        {
+          path: "/dashboard",
+          element: <div>Dashboard</div>
+        },
+        {
+          path: "/categorias",
+          element: <Categories />
+        },
+        {
+          path: "/proveedores",
+          element: <Providers />
+        },
+        {
+          path: "/medidas",
+          element: <Measures />
+        },
+        {
+          path: "/usuarios",
+          element: <Users />
+        },
+        {
+          path: "/productos",
+          element: <Products />
+        },
+        {
+          path: "/movimientos",
+          element: <Movements />
+        }
+      ] }
+    ] }
+  ])
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Auth />} />
-        <Route element={<ProtectedRoute />}>
-          <Route element={<MainLayout />}>
-            <Route path="/dashboard" element={<div>Dashboard</div>} />
-            <Route path="/categorias" element={<Categories />} />
-            <Route path="/proveedores" element={<Providers />} />
-            <Route path="/medidas" element={<Measures />} />
-            <Route path="/usuarios" element={<Users />} />
-            <Route path="/productos" element={<Products />} />
-            <Route path="/movimientos" element={<Movements />} />
-          </Route>
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+    <Suspense fallback={<SuspenseLoading />}>
+      {routes}
+    </Suspense>
+  )
 };

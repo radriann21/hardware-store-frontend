@@ -14,6 +14,8 @@ import { useMemo, useState } from "react";
 import { CustomTable } from "@/shared/components/custom/CustomTable";
 import { usePagination } from "@/shared/hooks/usePagination";
 import { useDebounceValue } from "@/shared/hooks/useDebounceValue";
+import { MovementDialog } from "./components/MovementDialog";
+import type { ModalState } from "@/shared/interfaces/interfaces";
 import type { ColumnDef } from "@/shared/components/custom/CustomTable";
 import type { Movement, MovementType } from "./interfaces/interfaces";
 
@@ -24,6 +26,7 @@ const movementTypeLabels: Record<MovementType, string> = {
 };
 
 export default function Movements() {
+  const [modalState, setModalState] = useState<ModalState<Movement>>({ type: "closed" });
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebounceValue(search, 500);
   const { page, setPage } = usePagination();
@@ -91,6 +94,7 @@ export default function Movements() {
           color="white"
           size="sm"
           fontWeight="semibold"
+          onClick={() => setModalState({ type: "create" })}
           _hover={{
             bgColor: "#5a4fb8",
           }}
@@ -129,6 +133,11 @@ export default function Movements() {
         page={movements?.meta.page || 1}
         count={movements?.meta.total || 0}
         onPageChange={(newPage) => setPage(newPage)}
+      />
+
+      <MovementDialog
+        isOpen={modalState.type === "create"}
+        onClose={() => setModalState({ type: "closed" })}
       />
     </>
   );
