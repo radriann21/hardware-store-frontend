@@ -17,8 +17,11 @@ interface MeasureCardProps {
   onDelete?: (measure: Measure) => void;
 }
 
-export const MeasureCard = ({ measure, onEdit, onDelete }: MeasureCardProps) => {
-
+export const MeasureCard = ({
+  measure,
+  onEdit,
+  onDelete,
+}: MeasureCardProps) => {
   return (
     <>
       <Box
@@ -29,6 +32,13 @@ export const MeasureCard = ({ measure, onEdit, onDelete }: MeasureCardProps) => 
         shadow="sm"
         border="1px solid"
         borderColor="gray.200"
+        animation="fade-in"
+        animationDuration="0.4s"
+        style={{
+          animationDelay: `${measure.id * 0.03}s`,
+          opacity: 0,
+          animationFillMode: "forwards",
+        }}
         _hover={{
           shadow: "md",
         }}
@@ -55,10 +65,17 @@ export const MeasureCard = ({ measure, onEdit, onDelete }: MeasureCardProps) => 
           {measure.abbreviation === "KG" && "Weight unit"}
           {measure.abbreviation === "M" && "Length unit"}
           {measure.abbreviation === "PCK" && "Package of units"}
-          {!["PC", "BOX", "KG", "M", "PCK"].includes(measure.abbreviation) && "Unidad de medida"}
+          {!["PC", "BOX", "KG", "M", "PCK"].includes(measure.abbreviation) &&
+            "Unidad de medida"}
         </Text>
 
-        <Flex w="full" gap={2} borderTop="1px solid" borderColor="gray.200" pt={4}>
+        <Flex
+          w="full"
+          gap={2}
+          borderTop="1px solid"
+          borderColor="gray.200"
+          pt={4}
+        >
           {onEdit && (
             <Button
               flex={1}

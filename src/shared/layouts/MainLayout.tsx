@@ -8,6 +8,7 @@ import {
   Heading,
   Menu,
   Button,
+  IconButton,
 } from "@chakra-ui/react";
 import { Outlet, NavLink as RouterNavLink } from "react-router";
 import {
@@ -20,21 +21,29 @@ import {
   Users,
   LogOut,
   User,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+import { useState } from "react";
 import { useAuthStore } from "@/shared/stores/AuthStore";
 import { ROUTES } from "@/shared/config/routes";
 
 export const MainLayout = () => {
+  const [isCollapsed, setIsCollapsed] = useState(false);
+
   return (
     <Flex minH="100vh" bgColor="mainBg">
       <Box display={{ base: "none", md: "block" }}>
-        <SidebarContent />
+        <SidebarContent
+          isCollapsed={isCollapsed}
+          onToggle={() => setIsCollapsed(!isCollapsed)}
+        />
       </Box>
       <Flex
         direction="column"
         flex="1"
-        ml={{ base: 0, md: 64 }}
-        transition="margin-left 0.2s ease"
+        ml={{ base: 0, md: isCollapsed ? 20 : 64 }}
+        transition="margin-left 0.3s ease"
       >
         <Box as="main" p={8}>
           <Outlet />
@@ -48,34 +57,47 @@ interface NavItemProps {
   icon: React.ElementType;
   label: string;
   isActive: boolean;
+  isCollapsed: boolean;
 }
 
-const NavItem = ({ icon, label, isActive }: NavItemProps) => {
+const NavItem = ({ icon, label, isActive, isCollapsed }: NavItemProps) => {
   return (
     <Flex
       align="center"
-      px={4}
+      justify={isCollapsed ? "center" : "flex-start"}
+      px={isCollapsed ? 2 : 4}
       py={3}
       borderRadius="md"
       cursor="pointer"
-      transition="all 0.2s"
+      transition="all 0.3s ease"
       bg={isActive ? "accentColor" : "transparent"}
       color={isActive ? "white" : "primaryText"}
       _hover={{
-        bg: isActive ? "accentColorHover" : "gray.100",
+        bg: isActive ? "accentColorHover" : "purple.100",
       }}
+      position="relative"
     >
-      <HStack gap={3}>
-        <Icon fontSize="xl">{icon && <Box as={icon} />}</Icon>
-        <Text fontSize="sm" fontWeight="medium">
+      <Icon fontSize="xl">{icon && <Box as={icon} />}</Icon>
+      {!isCollapsed && (
+        <Text
+          fontSize="sm"
+          fontWeight="medium"
+          ml={3}
+          opacity={isCollapsed ? 0 : 1}
+          transition="opacity 0.2s ease"
+        >
           {label}
         </Text>
-      </HStack>
+      )}
     </Flex>
   );
 };
 
-const UserMenu = () => {
+interface UserMenuProps {
+  isCollapsed: boolean;
+}
+
+const UserMenu = ({ isCollapsed }: UserMenuProps) => {
   const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
@@ -88,18 +110,24 @@ const UserMenu = () => {
         <Button
           variant="outline"
           width="full"
-          justifyContent="flex-start"
-          px={4}
+          justifyContent={isCollapsed ? "center" : "flex-start"}
+          px={isCollapsed ? 2 : 4}
           py={2}
         >
-          <HStack gap={2}>
+          {isCollapsed ? (
             <Icon fontSize="lg">
               <Box as={User} />
             </Icon>
-            <Text fontSize="sm" fontWeight="medium" truncate>
-              {user?.username || "Usuario"}
-            </Text>
-          </HStack>
+          ) : (
+            <HStack gap={2}>
+              <Icon fontSize="lg">
+                <Box as={User} />
+              </Icon>
+              <Text fontSize="sm" fontWeight="medium" truncate>
+                {user?.username || "Usuario"}
+              </Text>
+            </HStack>
+          )}
         </Button>
       </Menu.Trigger>
       <Menu.Content>
@@ -121,7 +149,12 @@ const UserMenu = () => {
   );
 };
 
-const SidebarContent = () => {
+interface SidebarContentProps {
+  isCollapsed: boolean;
+  onToggle: () => void;
+}
+
+const SidebarContent = ({ isCollapsed, onToggle }: SidebarContentProps) => {
   const navItems = [
     { icon: BarChart3, label: "Dashboard", path: ROUTES.DASHBOARD },
     { icon: Package, label: "Productos", path: ROUTES.PRODUCTS },
@@ -138,14 +171,15 @@ const SidebarContent = () => {
       left={0}
       top={0}
       h="100vh"
-      w={64}
+      w={isCollapsed ? 20 : 64}
       bg="white"
       borderRight="1px"
       borderColor="gray.200"
       display="flex"
       flexDirection="column"
+      transition="width 0.3s ease"
     >
-      <Box p={6} borderBottom="1px" borderColor="gray.200">
+      <Box p={6} borderBottom="1px" borderColor="gray.200" position="relative">
         <Heading
           size="2xl"
           color="accentColor"
@@ -154,6 +188,31 @@ const SidebarContent = () => {
         >
           HW
         </Heading>
+        <IconButton
+          position="absolute"
+          right={-5}
+          top="50%"
+          transform="translateY(-50%)"
+          size="sm"
+          variant="solid"
+          bgColor="white"
+          border="1px"
+          borderColor="gray.200"
+          shadow="md"
+          onClick={onToggle}
+          aria-label={isCollapsed ? "Expandir sidebar" : "Colapsar sidebar"}
+          _hover={{
+            bgColor: "purple.100",
+          }}
+          zIndex={10}
+          rounded="full"
+        >
+          {isCollapsed ? (
+            <ChevronRight color="purple" size={16} />
+          ) : (
+            <ChevronLeft color="purple" size={16} />
+          )}
+        </IconButton>
       </Box>
 
       <VStack gap={1} p={4} flex={1} align="stretch">
@@ -168,6 +227,7 @@ const SidebarContent = () => {
                 icon={item.icon}
                 label={item.label}
                 isActive={isActive}
+                isCollapsed={isCollapsed}
               />
             )}
           </RouterNavLink>
@@ -175,10 +235,12 @@ const SidebarContent = () => {
       </VStack>
 
       <Box p={4} borderTop="1px" borderColor="gray.200">
-        <UserMenu />
-        <Text fontSize="xs" color="secondaryText" textAlign="center" mt={2}>
-          Hardware Inventory v1.0
-        </Text>
+        <UserMenu isCollapsed={isCollapsed} />
+        {!isCollapsed && (
+          <Text fontSize="xs" color="secondaryText" textAlign="center" mt={2}>
+            Hardware Inventory v1.0
+          </Text>
+        )}
       </Box>
     </Box>
   );

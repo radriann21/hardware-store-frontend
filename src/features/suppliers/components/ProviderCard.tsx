@@ -8,18 +8,23 @@ import {
   Icon,
   IconButton,
 } from "@chakra-ui/react";
-import { Pencil, Mail, Phone, MapPin, Copy, Trash2 } from "lucide-react";
+import { Pencil, Mail, Phone, MapPin, Trash2 } from "lucide-react";
 import { Tooltip } from "@/shared/components/ui/tooltip";
 import type { Provider } from "@/features/suppliers/interfaces/interfaces";
 
 interface ProviderCardProps {
+  index: number;
   provider: Provider;
   onEdit?: (provider: Provider) => void;
   onDelete?: (provider: Provider) => void;
 }
 
-export const ProviderCard = ({ provider, onEdit, onDelete }: ProviderCardProps) => {
-
+export const ProviderCard = ({
+  index,
+  provider,
+  onEdit,
+  onDelete,
+}: ProviderCardProps) => {
   return (
     <>
       <Box
@@ -30,27 +35,31 @@ export const ProviderCard = ({ provider, onEdit, onDelete }: ProviderCardProps) 
         shadow="sm"
         border="1px solid"
         borderColor="gray.200"
+        animation="fade-in"
+        animationDuration="0.4s"
+        style={{
+          animationDelay: `${index * 0.03}s`,
+          opacity: 0,
+          animationFillMode: "forwards",
+        }}
         _hover={{
           shadow: "md",
         }}
       >
         <Flex justifyContent="space-between" alignItems="flex-start" mb={4}>
           <Box>
-            <Heading as="h3" fontSize="lg" color="gray.900" fontWeight="semibold">
+            <Heading
+              as="h3"
+              fontSize="lg"
+              color="gray.900"
+              fontWeight="semibold"
+            >
               {provider.name}
             </Heading>
             <Text color="gray.500" fontSize="sm" mt={1}>
               Contact: {provider.contact_name}
             </Text>
           </Box>
-          <Button
-            size="xs"
-            variant="ghost"
-            colorPalette="blue"
-            aria-label="Copy"
-          >
-            <Copy size={14} />
-          </Button>
         </Flex>
 
         <Flex direction="column" gap={2} mb={4}>
@@ -78,7 +87,13 @@ export const ProviderCard = ({ provider, onEdit, onDelete }: ProviderCardProps) 
           )}
         </Flex>
 
-        <Flex w="full" gap={2} borderTop="1px solid" borderColor="gray.200" pt={4}>
+        <Flex
+          w="full"
+          gap={2}
+          borderTop="1px solid"
+          borderColor="gray.200"
+          pt={4}
+        >
           {onEdit && (
             <Button
               flex={1}
