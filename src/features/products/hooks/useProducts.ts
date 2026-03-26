@@ -86,3 +86,34 @@ export const useEditProduct = () => {
     },
   });
 }
+
+export const useGetExportedProducts = () => {
+  return useQuery({
+    queryFn: () => ProductsApi.getExportProducts(),
+    queryKey: ["export-products"],
+  });
+}
+
+export const useImportProductsFromExcel = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (file: File) => ProductsApi.importProductsFromExcel(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [queryKeys.products.list],
+      });
+      toaster.create({
+        title: "Productos importados",
+        description: "Los productos se han importado correctamente",
+        type: "success"
+      });
+    },
+    onError: () => {
+      toaster.create({
+        title: "Error",
+        description: "Error al importar los productos",
+        type: "error",
+      });
+    },
+  });
+}

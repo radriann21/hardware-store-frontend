@@ -24,6 +24,13 @@ export const CategoryCard = ({ category, onEdit, onDelete }: CategoryCardProps) 
       rounded="md"
       bg="white"
       shadow="sm"
+      animation="fade-in"
+      animationDuration="0.4s"
+      style={{
+        animationDelay: `${category.id * 0.03}s`,
+        opacity: 0,
+        animationFillMode: "forwards"
+      }}
       _hover={{
         shadow: "md",
       }}

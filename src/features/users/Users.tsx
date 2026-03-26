@@ -107,7 +107,7 @@ export default function Users() {
         justifyContent="space-between"
         mb={4}
       >
-        <Box>
+        <Box animation="fade-in">
           <Heading size="2xl">Usuarios</Heading>
           <Text fontSize="lg" color="gray.600">
             Gestiona los usuarios del sistema y sus permisos

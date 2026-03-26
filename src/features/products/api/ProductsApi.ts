@@ -26,4 +26,17 @@ export const ProductsApi = {
     const response = await axiosClient.patch(`/products/${id}`, data);
     return response.data;
   },
+  async getExportProducts() {
+    const response = await axiosClient.get("/products/export", {
+      responseType: "blob"
+    });
+    return response.data;
+  },
+  async importProductsFromExcel(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await axiosClient.post("products/import", formData)
+    return response.data;
+  }
 };

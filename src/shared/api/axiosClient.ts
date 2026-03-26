@@ -5,9 +5,6 @@ import { useAuthStore } from "@/shared/stores/AuthStore";
 export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
 });
 
 axiosClient.interceptors.response.use(
@@ -24,17 +21,10 @@ axiosClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const { status, data } = error.response;
+    const { status } = error.response;
     const isLogoutResponse = error.config.url?.includes("/auth/logout");
 
     switch (status) {
-      case 400:
-        toaster.create({
-          title: "Error de validación",
-          description: data.message || "Error de validación",
-          type: "error",
-        });
-        break;
       case 401:
         useAuthStore.getState().setUser(null);
         if (!error.config.url?.includes("/auth/me") && !isLogoutResponse) {

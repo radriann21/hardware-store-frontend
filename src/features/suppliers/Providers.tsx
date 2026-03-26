@@ -44,8 +44,9 @@ export default function Providers() {
           <Text textAlign="center" mt="2rem">Cargando...</Text>
         ) : providers && providers.length > 0 ? (
           <Grid as="section" w="full" gridTemplateColumns="repeat(auto-fill, minmax(350px, 1fr))" gap={6} mt="2rem">
-            {providers.map((provider) => (
+            {providers.map((provider, index) => (
               <ProviderCard
+                index={index}
                 key={provider.id}
                 provider={provider}
                 onEdit={(provider) => setModalState({ type: 'edit', el: provider })}

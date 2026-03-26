@@ -51,7 +51,7 @@ export const CustomTable = <T,>({
 
   return (
     <>
-      <Table.Root size={tableSize} striped>
+      <Table.Root size={tableSize} striped interactive>
         <Table.Header>
           <Table.Row>
             {columns.map((column) => (
@@ -83,7 +83,16 @@ export const CustomTable = <T,>({
               </Table.Row>
             ) : (
               data.map((item, rowIndex) => (
-                <Table.Row key={rowIndex}>
+                <Table.Row
+                  key={rowIndex}
+                  animation="fade-in"
+                  animationDuration="0.4s"
+                  style={{
+                    animationDelay: `${rowIndex * 0.02}s`,
+                    opacity: 0,
+                    animationFillMode: "forwards"
+                  }}
+                >
                   {columns.map((column) => (
                     <Table.Cell key={column.id} fontSize="xs">
                       {renderCellContent(item, column)}
@@ -107,11 +116,7 @@ export const CustomTable = <T,>({
       >
         <ButtonGroup>
           <Pagination.PrevTrigger asChild>
-            <IconButton 
-              size="xs"
-              variant="outline"
-              colorPalette="purple"
-            >
+            <IconButton size="xs" variant="outline" colorPalette="purple">
               <ChevronLeft />
             </IconButton>
           </Pagination.PrevTrigger>
@@ -131,11 +136,7 @@ export const CustomTable = <T,>({
             )}
           />
           <Pagination.NextTrigger asChild>
-            <IconButton 
-              size="xs"
-              variant="outline"
-              colorPalette="purple"
-            >
+            <IconButton size="xs" variant="outline" colorPalette="purple">
               <ChevronRight />
             </IconButton>
           </Pagination.NextTrigger>

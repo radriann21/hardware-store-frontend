@@ -23,6 +23,7 @@ import { CreateProductModal } from "./components/CreateProductModal";
 import { Tooltip } from "@/shared/components/ui/tooltip";
 import { ProductCard } from "./components/ProductCard";
 import { ConfirmDeleteDialog } from "@/shared/components/custom/ConfirmDeleteDialog";
+import { ImportExcelDialog } from "./components/ImportExcelDialog";
 import type { ModalState } from "@/shared/interfaces/interfaces";
 import type { Product } from "./interfaces/interfaces";
 
@@ -31,6 +32,7 @@ export default function Products() {
   const [modalState, setModalState] = useState<ModalState<Product>>({ type: "closed" });
   const [viewMode, setViewMode] = useState<"cards" | "table">("table");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const debouncedSearch = useDebounceValue(searchTerm, 500);
 
   const { data: products, isLoading } = useGetAllProducts({
@@ -122,6 +124,7 @@ export default function Products() {
         </Box>
         <ProductsOptions 
           onAddProduct={() => setModalState({ type: "create" })} 
+          onImportExcel={() => setIsImportDialogOpen(true)}
         />
       </Flex>
       <Flex my="20px" gapX="20px" alignItems="center" w="100%">
@@ -214,6 +217,10 @@ export default function Products() {
             setModalState({ type: "closed" });
           }
         }}
+      />
+      <ImportExcelDialog
+        isOpen={isImportDialogOpen}
+        onOpenChange={setIsImportDialogOpen}
       />
     </>
   );
