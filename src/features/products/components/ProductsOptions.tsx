@@ -1,18 +1,40 @@
 import { Button, Menu, Portal } from "@chakra-ui/react";
 import { Download, Import, Plus, Upload, ArrowUp, ArrowDown } from "lucide-react";
 import { useState } from "react";
+import { useGetExportedProducts } from "@/features/products/hooks/useProducts";
 
 interface ProductsOptionsProps {
   onAddProduct: () => void;
+  onImportExcel: () => void;
 }
 
-export const ProductsOptions = ({ onAddProduct }: ProductsOptionsProps) => {
+export const ProductsOptions = ({ onAddProduct, onImportExcel }: ProductsOptionsProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: exportedProducts } = useGetExportedProducts();
+
+  const handleExportProducts = () => {
+    if (exportedProducts) {
+      const href = URL.createObjectURL(exportedProducts);
+      const link = document.createElement('a');
+      link.href = href;
+      link.download = 'products.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(href);
+    }
+  }
 
   const handleOptionClick = (value: string) => {
     switch (value) {
       case "add":
         onAddProduct();
+        break;
+      case "import":
+        onImportExcel();
+        break;
+      case "export":
+        handleExportProducts();
         break;
       default:
         break;
