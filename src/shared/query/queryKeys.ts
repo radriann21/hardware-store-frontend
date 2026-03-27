@@ -20,4 +20,7 @@ export const queryKeys = {
   movements: {
     list: "movements",
   },
+  dashboard: {
+    stats: "dashboard-stats",
+  },
 } as const;
