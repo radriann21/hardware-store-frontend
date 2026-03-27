@@ -12,6 +12,7 @@ const Measures = lazy(() => import("@/features/measures/Measures"));
 const Users = lazy(() => import("@/features/users/Users"));
 const Products = lazy(() => import("@/features/products/Products"));
 const Movements = lazy(() => import("@/features/movements/Movements"));
+const Dashboard = lazy(() => import("@/features/dashboard/Dashboard"));
 
 export const AppRoutes = () => {
 
@@ -21,7 +22,7 @@ export const AppRoutes = () => {
       { element: <MainLayout />, children: [
         {
           path: "/dashboard",
-          element: <div>Dashboard</div>
+          element: <Dashboard />
         },
         {
           path: "/categorias",
